@@ -1,7 +1,6 @@
 import _ from 'underscore'
 import Vue from 'vue'
 import Vuei18n from 'vue-i18n'
-// import config from '../config'
 import enLocale from 'element-ui/lib/locale/lang/en'
 import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 import jaLocale from 'element-ui/lib/locale/lang/ja'
@@ -44,7 +43,7 @@ const messages = {
 }
 
 const langLoader = new Vuei18n({
-  locale: 'ja',
+  locale: 'en',
   fallbackLocale: 'en',
   messages,
   silentTranslationWarn: true

@@ -1,148 +1,66 @@
 <template>
-  <div id="app" :class="{'sidebar-collapsed':sideBarCollapse}">
-    <div>
-      <div id="header-topbar-option-demo" class="page-header-topbar">
-        <nav id="topbar" role="navigation" style="margin-bottom: 0; z-index: 2;" class="navbar navbar-default navbar-static-top">
-          <div class="navbar-header">
-            <button type="button" data-toggle="collapse" data-target=".sidebar-collapse" class="navbar-toggle">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <router-link id="logo" class="navbar-brand" to="/">
-              <span class="fa fa-rocket"></span>
-              <span class="logo-text">µAdmin</span>
-              <span style="display: none" class="logo-text-icon">µ</span>
-            </router-link>
-          </div>
-          <div class="topbar-main">
-            <a id="menu-toggle" href="javascript:void(0)" class="hidden-xs"  @click="toggleNavigation"> <i class="fa fa-bars"></i>
-            </a>
-            <form id="topbar-search" action="#" method="GET" class="hidden-xs">
-              <div class="input-group">
-                <input type="text" placeholder="Search..." class="form-control">          
-                <span class="input-group-btn">
-                  <a href="javascript:;" class="btn submit">
-                    <i class="fa fa-search"></i>
-                  </a>
-                </span>
-              </div>
-            </form>
-            <ul class="nav navbar navbar-top-links navbar-right mbn">
-              <language-select></language-select>       
-            </ul>          
-          </div>
-        </nav>
-        <!--BEGIN MODAL CONFIG PORTLET-->    
-        <div id="modal-config" class="modal fade">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
-                <h4 class="modal-title">Modal title</h4>
-              </div>
-              <div class="modal-body">
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend et nisl eget porta. Curabitur elementum sem molestie nisl varius, eget tempus odio molestie. Nunc vehicula sem arcu, eu pulvinar neque cursus ac. Aliquam ultricies lobortis magna et aliquam. Vestibulum egestas eu urna sed ultricies. Nullam pulvinar dolor vitae quam dictum condimentum. Integer a sodales elit, eu pulvinar leo. Nunc nec aliquam nisi, a mollis neque. Ut vel felis quis tellus hendrerit placerat. Vivamus vel nisl non magna feugiat dignissim sed ut nibh. Nulla elementum, est a pretium hendrerit, arcu risus luctus augue, mattis aliquet orci ligula eget massa. Sed ut ultricies felis.
-                </p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-              </div>
+    <div class="wrapper">
+        <div class="wrapper-header">
+            <topmenu :menu="menu"></topmenu>
+        </div>
+        <div class="wrapper-main">
+            <div class="wrapper-container">
+                <transition :name="transitionName">
+                    <router-view></router-view>
+                </transition>
             </div>
-          </div>
         </div>
-      </div>
-      <div id="wrapper">   
-        <sidemenu :menu="menu1"></sidemenu>
-        <div id="page-wrapper">
-          <div id="title-breadcrumb-option-demo" class="page-title-breadcrumb">
-            <div class="page-header pull-left">
-              <div class="page-title">{{name}} {{$t('hello')}}</div>
-            </div>
-            <div class="clearfix"></div>
-          </div>
-          <div class="page-content">
-         <!--  <button @click="test"> switch language</button>
-          <button @click="test2"> add resource</button> -->
-            <transition :name="transitionName">
-              <router-view></router-view>
-            </transition>
-          </div>
-        </div>
-        <div id="footer">
-          <div class="copyright">2017 © Genewiz - NGS Lab UI</div>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
-
-
 <script>
-import sidemenu from '@/components/sidemenu.vue'
+import topmenu from '@/components/topmenu.vue'
 import languageSelect from '@/components/languageSelect.vue'
 export default {
-  name: 'app',
-  data () {
-    return {
-      sideBarCollapse: true,
-      transitionName: 'slide-left',
-      menu1: [{title: 'Demo',
-        open: false,
-        active: false,
-        icon: 'el-icon-message',
-        items: [{title: 'form1', url: '/', active: false},
-                {title: 'form2', url: '/h1', active: false},
-                {title: 'form3', url: '/h2', active: false},
-                {title: 'ViewProject1', url: '/project/1', active: false},
-                {title: 'table2', url: '/', active: false},
-                {title: 'table3', url: '/', active: false},
-                {title: 'Dialog', url: '/', active: false},
-                {title: 'Tab1', url: '/'}]},
-                {title: 'Home', icon: 'el-icon-menu', url: '/'},
-      {title: 'Dashboards',
-        icon: 'el-icon-setting',
-        open: false,
-        active: false,
-        items: [{title: 'Sync Dashboard', url: '/h2'},
-                    {title: 'Dashboard2', url: '/'},
-                    {title: 'Dashboard3', url: '/'},
-                    {title: 'Dashboard4', url: '/'}]}]
-    }
-  },
-  methods: {
-    toggleNavigation: function toggleNavigation () {
-      this.sideBarCollapse = !this.sideBarCollapse
+    name: 'app',
+    created (){
+      var category=[{"t":"Apparel", "st":["T-Shirts","Dress Shirts","Uniforms","Polo Shirts","Outerwear","Other Apparel","Sweatshirts","Headwear","Women's Apparel","Sweaters & Cardigans","Athletic Apparel","Quick Links","Embroidered Apparel","Shop by Brand"]},{"t":"Auto, Home & Tools","st":["Auto Accessories","Key Tags","Living","Food & Lunch Containers","Pet Supplies","Flashlights","Kitchenware","Tape Measures","Key Lights","Lawn & Garden","Tools","Quick Links"]},{"t":"Bags","st":["Totes","Laptop & Tablet Bags","Travel","Coolers","Business Bags","Plastic Bags","Drawstring Sportpacks","Backpacks","Paper Bags","Duffels & Gym Bags","Wallets","Gift Bags","Embroidered Bags","Quick Links","Shop by Brand"]},{"t":"Drinkware","st":["Sport & Water Bottles","Travel Mugs & Tumblers","Plastic Cups","Beverage Holders","Glassware","Disposable Cups","Ceramic Mugs","Coasters","Quick Links","Shop by Brand"]},{"t":"Food & Candy","st":["Candy","Individually Wrapped","Bags","Chocolate","Cookies","Candy Jars","Gum","Mints","Tins","Nuts & Pretzels","Gift Boxes & Baskets","Packaged with Gift","Popcorn","Water & Beverages","BBQ Gifts","Mixed Assortment","Cheese & Meats","Wine Gifts","Quick Links","Shop by Brand"]},{"t":"Office & Awards","st":["Magnets","Stickers & Decals","Awards & Recognition","Desk Accessories","Stress Relievers","Business Card Holders","Picture Frames","Rulers","Clocks","Books & Bookmarks","Calculators","Watches","Quick Links"]},{"t":"Outdoor & Leisure","st":["Umbrellas","Team Spirit","Golf","Towels","Blankets","Chairs","Sunglasses","Sports","BBQ & Picnic","Hand Fans","Quick Links"]},{"t":"Stationery","st":["Padfolios","Cubes, Pads & Flags","Calendars","Notebooks & Journals","Marketing Materials","Planners & Diaries","Presentation Folders","Packaging","Greeting Cards","Document Holders","Binders","Clipboards","Quick Links","Shop by Brand"]},{"t":"Technology","st":["Power Banks","USB Flash Drives","Stylus Pens & Tools","Tech Accessories","Laptop Bags","Music & Audio","Mouse Pads","Quick Links"]},{"t":"Toys & Novelties","st":["Childrens Toys","Novelty & Sport Balls","Coloring & Art","Balloons","Flyers","Executive Toys","Noisemakers","Tattoos","Light Up Novelties","Quick Links"]},{"t":"Trade Show & Signage","st":["Table Covers & Throws","Banners, Flags & Signs","Lanyards & Badges","Lanyard & ID Holder Accessories","Display Accessories","Food Service Supplies","Table Top Displays","Trade Show Games","Floor Displays","Display Kits","Tents","Literature Displays","Giveaways","Quick Links"]},{"t":"Wellness & Safety","st":["Personal Care","First Aid","Safety","Healthcare","Hand Sanitizers","Fitness","Pedometers","Lip Balm","Sunscreen","Educational Guides","Awareness Bracelets","Buttons","Quick Links"]},{"t":"Writing","st":["Pens","Pencils","Multi Function Writing","Writing Sets","Executive Writing","Stylus Pens","Highlighters","Markers","Quick Links","Shop by Brand"]},{"t":"See More","st":["4imprint Shops","4imprint Quick Links","More Ways to Shop"]}];
+
+          var mlist=[];
+          for (var i =  0; i <category.length; i++) {
+            var c=category[i]
+            var m={};
+            m.title=c.t;
+            m.active=false;
+            m.url='/products/'+m.title;
+            if(c.st){
+              m.items=[];
+              for (var j =  0; j <c.st.length; j++) {
+                var cst=c.st[j];
+                var subm={};
+                subm.title=cst;
+                subm.active=false;
+                subm.url='/products/'+subm.title;
+                m.items.push(subm)
+              }
+            }
+            mlist.push(m)
+          }
+          this.menu=mlist;
     },
-    // test: function test () {
-    //   if (this.$i18n.locale === 'ja') {
-    //     this.$i18n.locale = 'en'
-    //   } else {
-    //     this.$i18n.locale = 'ja'
-    //   }
-    // },
-    // test2: function test2 () {
-    //   this.$i18n.mergeLocaleMessage('en', {hello: '22xxxx222', test2: 'new_en_test222_new'})
-    // }
-  },
-  computed: {
-    name () {
-      return this.$route.name
+    data() {
+        return {
+            transitionName: 'slide-left',
+            menu:[]
+        }
+    },
+    methods: {},
+    computed: {
+        name() {
+            return this.$route.name
+        }
+    },
+    components: {
+        topmenu: topmenu,
+        languageSelect: languageSelect
     }
-  },
-  components: {sidemenu: sidemenu, languageSelect: languageSelect}
 }
 </script>
-
 <style>
-@import './assets/vendors/font-awesome/css/font-awesome.min.css';
-@import './assets/vendors/bootstrap/css/bootstrap.min.css';
 @import '../node_modules/element-ui/lib/theme-default/index.css';
-@import './assets/css/themes/style1/orange-blue.css';
-@import './assets/css/style-responsive.css';
-@import './assets/css/transition.css'
-
+@import './assets/css/style.css';
 </style>
