@@ -1,15 +1,24 @@
 <template>
     <div class="product-detail" v-loading="loading">
         <div class="left">
-            <div class="preview">
+            <section class="preview">
             <product-image-viewer :imgs="productImages"></product-image-viewer>
-            </div>
-            <div class="description"></div>
+            </section>
+            <section class="description">
+            	<article>
+            		<h1>Product Details</h1>
+            		<h3>Description</h3>
+            		<ul v-for="(d,i) in product.descriptions">
+            			<li>{{d}}</li>
+            		</ul>
+            	</article>
+            </section>
         </div>
         <div class="right">
-            <div class="price table">
-        {{product.pid}}|{{product.description}}</div>
-            <div class="actions"></div>
+            <section class="price table">
+            	<h3>Price</h3>
+        		{{product.pid}}|{{product.description}}</section>
+            <section class="actions"></section>
         </div>
     </div>
 </template>

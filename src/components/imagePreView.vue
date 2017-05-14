@@ -1,7 +1,7 @@
 <template>
 	<section>
 		<div class="photoSwipeBoxWrapper">
-			<div class="leftArrow" @click="move(currentIndex-1)"><</div>
+			<div class="leftArrow" @click="move(currentIndex-1)"><i class="el-icon-arrow-left"></i></div>
 			<div class="photoSwipeBox">
 				<div class='ph'>
 					<img :src="currentImg">
@@ -13,7 +13,7 @@
 					</template>
 				</div>
 			</div>
-			<div class="rightArrow" @click="move(currentIndex+1)">></div>
+			<div class="rightArrow" @click="move(currentIndex+1)"><i class="el-icon-arrow-right"></i></div>
 		</div>
 		<div class="preview-box">
 			<template v-for="(item,index) in imgs">
@@ -72,17 +72,26 @@
     width: 300px;
     margin: 0 auto ;
 }
+.photoSwipeBoxWrapper .leftArrow,
+.photoSwipeBoxWrapper .rightArrow {
+    position: absolute;
+    top: 45%;
+    cursor: pointer;
+    font-size: 20px
+}
+.photoSwipeBoxWrapper i[class*='el-icon-arrow-']{
+	font-size:30px
+}
+
+.photoSwipeBoxWrapper i:hover[class*='el-icon-arrow-']{
+	font-size:35px
+}
+
 .photoSwipeBoxWrapper .leftArrow{
 	margin-left: -40px;
 }
 .photoSwipeBoxWrapper .rightArrow{
 	margin-left: 440px;
-}
-.photoSwipeBoxWrapper .leftArrow,
-.photoSwipeBoxWrapper .rightArrow {
-    position: absolute;
-    top: 50%;
-    cursor: pointer;
 }
 
 .photoSwipeBox .ph-nav {
@@ -102,7 +111,7 @@
 }
 .ph-nav .ph-nav-item.active{
 
-    background: #333333;
+    background: #616161;
 }
 
 .preview-box{

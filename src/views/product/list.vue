@@ -44,9 +44,16 @@ export default {
         methods: {
             getProducts: function() {
                 this.loading = true;
-                this.$http.post(this.$api.product.getProductByCategroy, {
+                var url=this.$api.product.getProductByCategroy;
+                var data={
                     category: this.$route.params.category
-                }).then(res => {
+                };
+                if(this.$route.name=='searchproduct'){
+                    url=this.$api.product.searchProduct;
+                    data={filter:this.$route.params.filter}
+                }
+
+                this.$http.post(url, data).then(res => {
                     this.tableData = res.data
                     this.loading = false;
                 });
@@ -66,6 +73,12 @@ export default {
                 this.currentPage = val;
             }
         },
+        watch:{
+            $route:function(){
+                this.getProducts();
+            }
+        }
+        ,
         computed: {
             dateInGrid: function() {
                 var total = this.tableData.length;
@@ -102,7 +115,6 @@ export default {
     font-weight: bold;
     color: #333333;
     font-size: 12px;
-    /*padding-top: 2px;*/
     padding: 2px 2px;
 }
 
