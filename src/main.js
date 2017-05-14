@@ -7,9 +7,11 @@ import vueResource from 'vue-resource'
 import i18n from './extends/langLoader'
 import ElementUI from 'element-ui'
 import config from '@/config'
+import api from '@/api'
 
 Vue.config.productionTip = false
 Vue.use(config)
+Vue.use(api)
 Vue.use(vueResource)
 Vue.use(ElementUI)
 

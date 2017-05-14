@@ -28,6 +28,7 @@ body{
     position: relative;
     padding: 0 0px 30px;
     overflow-x: hidden;
+    margin-top: 60px;
 }
 .wrapper-navigate{
     position: fixed;
