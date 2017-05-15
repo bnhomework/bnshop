@@ -1,4 +1,5 @@
 const config={
+  imgServer:'http://127.0.0.1:3009/',
   apiServer: 'http://127.0.0.1:3009/api/',
 
 

@@ -25,6 +25,7 @@
 
 <script>
 	import productImageViewer from '@/components/imagePreView.vue'
+	import _ from 'underscore'
 	export default{
 		data(){
 			return {
@@ -52,7 +53,7 @@
 				if(!this.product.imgs){
 					return [];
 				}
-				return this.product.imgs
+				return _.pluck(this.product.imgs, 'url')
 			}
 
 		},
