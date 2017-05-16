@@ -3,7 +3,7 @@
         <el-row :gutter="40">
             <el-col ::xs="8" :sm="6" :md="6" :lg="4" v-for="(o, index) in dateInGrid" :key="o">
                 <el-card class="productcard">
-                    <router-link :to="{name:'viewproduct',params:{pid:o.id}}">
+                    <router-link :to="{name:'viewproduct',params:{pid:o.pid}}">
                         <div style="text-align:center">
                             <img :src="o.pic" class="image">
                         </div>

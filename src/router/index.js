@@ -13,8 +13,8 @@ const NotFound = (resolve) => { require(['@/views/NotFound.vue'], resolve) }
 
 var routes = [{path: '/', name: 'Home', component: Home},
 
-    {path: '/product/add', name: 'add product', component: productEdit},
-    {path: '/product/edit/:pid', name: 'edit product', component: productEdit},
+    {path: '/product/add', name: 'addproduct', component: productEdit},
+    {path: '/product/edit/:pid', name: 'editproduct', component: productEdit},
 
 
     {path: '/products/:category', name: 'productslist', component: productList},

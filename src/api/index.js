@@ -5,6 +5,7 @@ var apiServer=config.config.apiServer;
 product.getProductByCategroy=apiServer+'getProductByCategroy';
 product.getProductById=apiServer+'getProductById';
 product.searchProduct=apiServer+'searchProduct';
+product.saveProduct=apiServer+'saveProduct';
 
 const common={}
 common.uploadImg=apiServer+'upload/img';

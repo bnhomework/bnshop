@@ -1,5 +1,6 @@
 <template>
     <div>
+    <el-button @click="saveProduct">save</el-button>
         <el-row :gutter="20">
             <el-col :span="12">
                 <section>
@@ -74,7 +75,7 @@ export default {
     data() {
             return {
                 uploadUrl: this.$api.common.uploadImg,
-                product: {},
+                product: {imgs:[],descriptions:[],prices:[]},
                 selectedOptions: [],
                 newDiscription: undefined,
                 newPrice:{},
@@ -102,13 +103,14 @@ export default {
             },
             handleProductImgs: function() {
                 var imgs = [];
+                console.log(this.product)
                 for (var img in this.product.imgs) {
 
                     if (img.response) {
                         imgs.push({
                             uid: img.uid,
                             name: img.response.fileName,
-                            url: this.$appSetting.imgServer + img.response.fileUrl
+                            url:  img.response.fileUrl
                         })
                     } else {
                         imgs.push(img)
@@ -149,6 +151,19 @@ export default {
                 }
                 this.priceDialogVisible=false;
             },
+            saveProduct:function(){
+            	this.handleProductImgs();
+            	this.$http.post(this.$api.product.saveProduct, {
+                    product:this.product
+                }).then(res => {
+                	this.$router.push({
+                    name: 'edit product',
+                    params: {
+                        pid: res.pid
+                    }
+                
+                });
+            })},
             handleChange: function(file, fileList) {
                 console.log(file, fileList);
             },
