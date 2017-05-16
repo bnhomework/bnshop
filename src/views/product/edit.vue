@@ -4,8 +4,7 @@
             <el-col :span="12">
                 <section>
                     <h3 class="demonstration">Categoary</h3>
-                    <el-cascader expand-trigger="hover" :options="categories" v-model="product.category" @change="handleChange" clearable size="large">
-                    </el-cascader>
+                    <el-cascader expand-trigger="hover" :options="categories" v-model="product.category" @change="handleChange" clearable size="large"></el-cascader>
                 </section>
                 <section>
                     <h3>Upload Images</h3>
@@ -21,36 +20,56 @@
                     <el-input placeholder="请输入内容" v-model="newDiscription">
                         <el-button slot="append" icon="plus" @click="addDescription"></el-button>
                     </el-input>
-                    <ul>
-                        <li v-for="(d,i) in product.descriptions" class="description-item"><span>{{d}}</span>
-                            <el-button icon="minus" type="danger" class="btn-action" @click="removeDescription(i)"></el-button>
-                        </li>
-                    </ul>
+                    <draggable v-model="product.descriptions" :options="{group:'people'}" @start="drag=true" @end="drag=false">
+                        <div v-for="(d,i) in product.descriptions" class="description-item">
+                            {{i+1}} :
+                            <span>{{d}}</span> <i class="el-icon-close" @click="removeDescription(i)"></i>
+
+                        </div>
+
+                    </draggable>
+
                 </section>
                 <section>
                     <h3>Prices</h3>
+                    <el-button @click="openEditPriceDialog()">Add</el-button>
                     <el-table :data="product.prices" border style="width: 100%">
-                        <el-table-column type="index">
-                        </el-table-column>
-                        <el-table-column prop="moq" label="MOQ" width="180" align="right">
-                        </el-table-column>
-                        <el-table-column prop="amount" label="Amount($)" align="right">
-                        </el-table-column>
+                        <el-table-column type="index"></el-table-column>
+                        <el-table-column prop="moq" label="MOQ" width="180" align="right"></el-table-column>
+                        <el-table-column prop="amount" label="Amount($)" align="right"></el-table-column>
                         <el-table-column label="操作" width="120">
                             <template scope="scope">
-                                <el-button @click.native.prevent="removePrice(scope.$index)" type="text" size="small">
-                                    移除
-                                </el-button>
+                                <el-button @click.native.prevent="removePrice(scope.$index)" type="text" size="small">Remove</el-button>
+                                <el-button @click.native.prevent="openEditPriceDialog(scope)" type="text" size="small">Edit</el-button>
                             </template>
-                            </el-table-column>
+                        </el-table-column>
                     </el-table>
                 </section>
             </el-col>
         </el-row>
+        <el-dialog
+              title="Price"
+              :visible="priceDialogVisible"
+              size="tiny">
+            <el-form :model.sync="newPrice">
+                <el-form-item label="MOQ" label-width="100">
+                    <el-input v-model="newPrice.moq" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="Amount($)" label-width="100">
+                    <el-input v-model="newPrice.amount" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="priceDialogVisible=false">Cancel</el-button>
+                <el-button type="primary" @click="updatePrice">Ok</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+import _ from 'underscore';
+import draggable  from 'vuedraggable'
 export default {
     data() {
             return {
@@ -58,7 +77,9 @@ export default {
                 product: {},
                 selectedOptions: [],
                 newDiscription: undefined,
-                newPrice:{}
+                newPrice:{},
+                priceDialogIndex:-1,
+                priceDialogVisible:false
             };
         }, created() {
             this.init();
@@ -103,7 +124,30 @@ export default {
                 this.product.descriptions.splice(i, 1)
             },
             removePrice:function(i){
-            	this.product.prices.splice(i, 1)
+                this.product.prices.splice(i, 1)
+            },
+            openEditPriceDialog:function(p){
+                if(p==undefined){
+                    this.priceDialogIndex=-1;
+                    this.newPrice={};
+                }
+                else{
+                    this.priceDialogIndex=p.$index;                    
+                    this.newPrice=_.extend({},p.row);
+                }
+                this.priceDialogVisible=true;
+
+                
+            },
+            updatePrice:function(){
+                if(this.priceDialogIndex<0){
+                    this.product.prices.push(this.newPrice);
+                }
+                else
+                {
+                    this.$set(this.product.prices,this.priceDialogIndex,this.newPrice);
+                }
+                this.priceDialogVisible=false;
             },
             handleChange: function(file, fileList) {
                 console.log(file, fileList);
@@ -142,22 +186,33 @@ export default {
             $route: function() {
                 this.init();
             }
-        }
+        },
+        components:{draggable:draggable}
 }
 </script>
 <style>
 .el-cascader .el-input input {
     width: 400px
 }
-
-.description-item:hover .btn-action {
+.description-item{
+    margin: 5px;
+    padding: 5px 25px;
+    border: 1px solid #c0ccda;
+    border-radius: 6px;
+    background-color: #f6f8fa;
+    position: relative;
+}
+.description-item:hover .el-icon-close {
     margin: 5px;
     display: inline-block;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    cursor: pointer;
+    font-size: 5px
 }
 
-.description-item .btn-action {
+.description-item .el-icon-close {
     display: none;
 }
-
-.btn-action {}
 </style>
