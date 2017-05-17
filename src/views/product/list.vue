@@ -19,8 +19,6 @@
                 </el-card>
             </el-col>
         </el-row>
-        <!-- <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[50, 100]" :page-size="pagesize" layout="total, sizes,->, prev, pager, next, jumper" :total="tableData.length">
-        </el-pagination> -->
         <el-pagination v-if="tableData.length>0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[24,50, 100]" :page-size="pagesize" layout="total, ->, prev, pager, next, jumper" :total="tableData.length">
         </el-pagination>
     </div>
