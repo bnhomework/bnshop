@@ -1,15 +1,20 @@
 <template>
     <div>
-    <el-button @click="saveProduct">save</el-button>
+        <el-button @click="saveProduct">save</el-button>
         <el-row :gutter="20">
             <el-col :span="12">
                 <section>
+                    <h3 class="demonstration">Name</h3>
+                     <el-input placeholder="" v-model="product.name">
+                    </el-input>
+                </section>
+                <section>
                     <h3 class="demonstration">Categoary</h3>
-                    <el-cascader expand-trigger="hover" :options="categories" v-model="product.category" @change="handleChange" clearable size="large"></el-cascader>
+                    <el-cascader expand-trigger="hover" :options="categories" v-model="product.category"  clearable size="large"></el-cascader>
                 </section>
                 <section>
                     <h3>Upload Images</h3>
-                    <el-upload class="upload-demo" :action="uploadUrl" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="product.imgs" list-type="picture">
+                    <el-upload :action="uploadUrl" :on-change="productImgsChange" :on-remove="productImgsChange" :file-list="imgList" list-type="picture">
                         <el-button size="small" type="primary">点击上传</el-button>
                         <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                     </el-upload>
@@ -75,12 +80,14 @@ export default {
     data() {
             return {
                 uploadUrl: this.$api.common.uploadImg,
-                product: {imgs:[],descriptions:[],prices:[]},
+                product: {},
                 selectedOptions: [],
+                imgList:[],
                 newDiscription: undefined,
                 newPrice:{},
                 priceDialogIndex:-1,
-                priceDialogVisible:false
+                priceDialogVisible:false,
+                imgServer:this.$appSetting.imgServer
             };
         }, created() {
             this.init();
@@ -99,34 +106,36 @@ export default {
                 }).then(res => {
                     this.product = res.data;
                     this.loading = false;
+                    this.imgList=_.extend([],this.product.imgs);
+
+                var self=this;
+                    _.each(this.imgList,function(x){x.url=self.imgServer+x.path})
                 });
             },
-            handleProductImgs: function() {
+            productImgsChange: function(file,fileList) {
                 var imgs = [];
-                console.log(this.product)
-                for (var img in this.product.imgs) {
-
+                for (var i = 0; i < fileList.length; i++) {
+                    var img=fileList[i]
                     if (img.response) {
                         imgs.push({
-                            uid: img.uid,
                             name: img.response.fileName,
-                            url:  img.response.fileUrl
+                            path:  img.response.fileUrl
                         })
                     } else {
-                        imgs.push(img)
+                        imgs.push(_.extend({},img))
                     }
                 }
                 this.product.imgs = imgs;
             },
             addDescription: function() {
+                if(!this.product.descriptions){
+                    this.$set(this.product,'descriptions',[]);
+                }
                 this.product.descriptions.push(this.newDiscription);
                 this.newDiscription = ''
             },
             removeDescription: function(i) {
-                this.product.descriptions.splice(i, 1)
-            },
-            removePrice:function(i){
-                this.product.prices.splice(i, 1)
+                this.product.descriptions.splice(i, 1);
             },
             openEditPriceDialog:function(p){
                 if(p==undefined){
@@ -137,11 +146,12 @@ export default {
                     this.priceDialogIndex=p.$index;                    
                     this.newPrice=_.extend({},p.row);
                 }
-                this.priceDialogVisible=true;
-
-                
+                this.priceDialogVisible=true;                
             },
             updatePrice:function(){
+                if(!this.product.prices){
+                    this.$set(this.product,'prices',[]);
+                }
                 if(this.priceDialogIndex<0){
                     this.product.prices.push(this.newPrice);
                 }
@@ -151,28 +161,22 @@ export default {
                 }
                 this.priceDialogVisible=false;
             },
+            removePrice:function(i){
+                this.product.prices.splice(i, 1)
+            },
             saveProduct:function(){
-            	this.handleProductImgs();
-            	this.$http.post(this.$api.product.saveProduct, {
+                this.$http.post(this.$api.product.saveProduct, {
                     product:this.product
                 }).then(res => {
-                	this.$router.push({
-                    name: 'edit product',
+                    console.log(res)
+                    this.$router.push({
+                    name: 'editproduct',
                     params: {
-                        pid: res.pid
+                        pid: res.data.pid
                     }
                 
                 });
-            })},
-            handleChange: function(file, fileList) {
-                console.log(file, fileList);
-            },
-            handlePreview: function(file) {
-
-            },
-            handleRemove: function(file, fileList) {
-                console.log(file, fileList);
-            }
+            })}
         }, computed: {
             categories: function() {
                 var category = this.$appSetting.categories;
@@ -206,7 +210,13 @@ export default {
 }
 </script>
 <style>
-.el-cascader .el-input input {
+.el-input{
+    width: 300px
+}
+.el-input.el-input-group{
+    width: 100%
+}
+.el-cascader .el-input{
     width: 400px
 }
 .description-item{

@@ -4,7 +4,7 @@
       
       <template v-for="(m,i) in menu">
         <template v-if="m.items">
-          <el-submenu :index="i+''">
+          <el-submenu :index="m.url">
             <template slot="title">
               <i :v-if="m.icon" :class="m.icon"></i>
               {{m.title}}

@@ -72,6 +72,10 @@
     width: 300px;
     margin: 0 auto ;
 }
+.photoSwipeBoxWrapper .photoSwipeBox .ph img{
+    /*height: 300px;*/
+    width: 300px;
+}
 .photoSwipeBoxWrapper .leftArrow,
 .photoSwipeBoxWrapper .rightArrow {
     position: absolute;

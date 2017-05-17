@@ -58,7 +58,8 @@
 				if(!this.product.imgs){
 					return [];
 				}
-				return _.pluck(this.product.imgs, 'url')
+				var imgServer=this.$appSetting.imgServer;
+				return _.map(this.product.imgs, function(x){return imgServer+x.path})
 			}
 
 		},
