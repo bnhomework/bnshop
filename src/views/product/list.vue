@@ -1,6 +1,6 @@
 <template>
     <div class="dashboard" v-loading="loading" style="min-height: 400px">
-        <el-row :gutter="40">
+        <el-row :gutter="10">
             <el-col ::xs="8" :sm="6" :md="6" :lg="4" v-for="(o, index) in dateInGrid" :key="o">
                 <el-card class="productcard">
                     <router-link :to="{name:'viewproduct',params:{pid:o.pid}}">

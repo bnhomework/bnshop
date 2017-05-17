@@ -4,6 +4,20 @@
 			<section class="preview">
 				<product-image-viewer :imgs="productImages"></product-image-viewer>
 			</section>
+			<section class="price table">
+				<h3>Prices</h3>
+				<el-table :data="product.prices" border style="width: 100%">
+					<el-table-column type="index"></el-table-column>
+					<el-table-column prop="moq" label="MOQ" width="180" align="right"></el-table-column>
+					<el-table-column prop="amount" label="Amount($)" align="right"></el-table-column>
+				</el-table>
+			</section>
+		</el-col>
+		<el-col :span="12">
+		<section>
+			<h3>Item # : {{product.pid}}</h3>
+			<h4>{{product.name}}</h4>
+		</section>
 			<section class="description">
 				<article>
 					<h1>Product Details</h1>
@@ -12,16 +26,6 @@
 						<li>{{d}}</li>
 					</ul>
 				</article>
-			</section>
-		</el-col>
-		<el-col :span="12">
-			<section class="price table">
-				<h3>Price</h3>
-				<el-table :data="product.prices" border style="width: 100%">
-					<el-table-column type="index"></el-table-column>
-					<el-table-column prop="moq" label="MOQ" width="180" align="right"></el-table-column>
-					<el-table-column prop="amount" label="Amount($)" align="right"></el-table-column>
-				</el-table>
 			</section>
 			<section class="actions"></section>
 		</el-col>

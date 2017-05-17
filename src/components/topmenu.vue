@@ -22,9 +22,9 @@
         </el-menu-item>
       </template>
     </template>
-    <li id="goble-search">
-      <el-input placeholder=""  v-model="SearchContent">
-        <el-button slot="append" icon="search" @click="handleSearch"></el-button>
+    <li id="goble-search" @keyup.enter="handleSearch">
+      <el-input placeholder=""  v-model="SearchContent" >
+        <el-button slot="append" icon="search" @click="handleSearch" ></el-button>
       </el-input>
     </li>
 
@@ -49,45 +49,23 @@
             console.log('handleClose')
           },
           handleSearch(){
-            console.log(this.SearchContent);
+            if(this.SearchContent&&this.SearchContent!='')
+              this.$emit('search',this.SearchContent);
           }
          }
     }
 </script>
 <style> 
+.el-menu--horizontal .el-submenu .el-menu-item{
+  min-width: 250px
+}
 #goble-search{
   position: relative;
-  right: 10px;
+  right: 40px;
   top:10px;
   float: right;
 }
 #goble-search>div{
-  width: 200px
+  width: 300px
 }   
-#goble-search input{
-      width:1px;
-      opacity: 0;
-}
-#goble-search [class^=el-icon-] {
-    vertical-align: baseline;
-    margin-right: 0px;
-}
-#goble-search .el-input-group__append{
-  border-left: 1px
-}
-#goble-search .group__append {
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
-}
-#goble-search:hover .group__append {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-#goble-search:hover .el-input-group__append{
-  border-left: 0px
-}
-#goble-search:hover input{
-      width:200px;
-      opacity: 1;
-}
 </style>

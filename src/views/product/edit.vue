@@ -5,12 +5,12 @@
             <el-col :span="12">
                 <section>
                     <h3 class="demonstration">Name</h3>
-                     <el-input placeholder="" v-model="product.name">
+                    <el-input placeholder="" v-model="product.name">
                     </el-input>
                 </section>
                 <section>
                     <h3 class="demonstration">Categoary</h3>
-                    <el-cascader expand-trigger="hover" :options="categories" v-model="product.category"  clearable size="large"></el-cascader>
+                    <el-cascader expand-trigger="hover" :options="categories" v-model="product.category" clearable size="large"></el-cascader>
                 </section>
                 <section>
                     <h3>Upload Images</h3>
@@ -30,11 +30,8 @@
                         <div v-for="(d,i) in product.descriptions" class="description-item">
                             {{i+1}} :
                             <span>{{d}}</span> <i class="el-icon-close" @click="removeDescription(i)"></i>
-
                         </div>
-
                     </draggable>
-
                 </section>
                 <section>
                     <h3>Prices</h3>
@@ -53,10 +50,7 @@
                 </section>
             </el-col>
         </el-row>
-        <el-dialog
-              title="Price"
-              :visible="priceDialogVisible"
-              size="tiny">
+        <el-dialog title="Price" :visible="priceDialogVisible" size="tiny">
             <el-form :model.sync="newPrice">
                 <el-form-item label="MOQ" label-width="100">
                     <el-input v-model="newPrice.moq" auto-complete="off"></el-input>
@@ -72,22 +66,21 @@
         </el-dialog>
     </div>
 </template>
-
 <script>
 import _ from 'underscore';
-import draggable  from 'vuedraggable'
+import draggable from 'vuedraggable'
 export default {
     data() {
             return {
                 uploadUrl: this.$api.common.uploadImg,
                 product: {},
                 selectedOptions: [],
-                imgList:[],
+                imgList: [],
                 newDiscription: undefined,
-                newPrice:{},
-                priceDialogIndex:-1,
-                priceDialogVisible:false,
-                imgServer:this.$appSetting.imgServer
+                newPrice: {},
+                priceDialogIndex: -1,
+                priceDialogVisible: false,
+                imgServer: this.$appSetting.imgServer
             };
         }, created() {
             this.init();
@@ -106,30 +99,32 @@ export default {
                 }).then(res => {
                     this.product = res.data;
                     this.loading = false;
-                    this.imgList=_.extend([],this.product.imgs);
+                    this.imgList = _.extend([], this.product.imgs);
 
-                var self=this;
-                    _.each(this.imgList,function(x){x.url=self.imgServer+x.path})
+                    var self = this;
+                    _.each(this.imgList, function(x) {
+                        x.url = self.imgServer + x.path
+                    })
                 });
             },
-            productImgsChange: function(file,fileList) {
+            productImgsChange: function(file, fileList) {
                 var imgs = [];
                 for (var i = 0; i < fileList.length; i++) {
-                    var img=fileList[i]
+                    var img = fileList[i]
                     if (img.response) {
                         imgs.push({
                             name: img.response.fileName,
-                            path:  img.response.fileUrl
+                            path: img.response.fileUrl
                         })
                     } else {
-                        imgs.push(_.extend({},img))
+                        imgs.push(_.extend({}, img))
                     }
                 }
                 this.product.imgs = imgs;
             },
             addDescription: function() {
-                if(!this.product.descriptions){
-                    this.$set(this.product,'descriptions',[]);
+                if (!this.product.descriptions) {
+                    this.$set(this.product, 'descriptions', []);
                 }
                 this.product.descriptions.push(this.newDiscription);
                 this.newDiscription = ''
@@ -137,46 +132,49 @@ export default {
             removeDescription: function(i) {
                 this.product.descriptions.splice(i, 1);
             },
-            openEditPriceDialog:function(p){
-                if(p==undefined){
-                    this.priceDialogIndex=-1;
-                    this.newPrice={};
+            openEditPriceDialog: function(p) {
+                if (p == undefined) {
+                    this.priceDialogIndex = -1;
+                    this.newPrice = {};
+                } else {
+                    this.priceDialogIndex = p.$index;
+                    this.newPrice = _.extend({}, p.row);
                 }
-                else{
-                    this.priceDialogIndex=p.$index;                    
-                    this.newPrice=_.extend({},p.row);
-                }
-                this.priceDialogVisible=true;                
+                this.priceDialogVisible = true;
             },
-            updatePrice:function(){
-                if(!this.product.prices){
-                    this.$set(this.product,'prices',[]);
+            updatePrice: function() {
+                if (!this.product.prices) {
+                    this.$set(this.product, 'prices', []);
                 }
-                if(this.priceDialogIndex<0){
+                if (this.priceDialogIndex < 0) {
                     this.product.prices.push(this.newPrice);
+                } else {
+                    this.$set(this.product.prices, this.priceDialogIndex, this.newPrice);
                 }
-                else
-                {
-                    this.$set(this.product.prices,this.priceDialogIndex,this.newPrice);
-                }
-                this.priceDialogVisible=false;
+                this.priceDialogVisible = false;
             },
-            removePrice:function(i){
+            removePrice: function(i) {
                 this.product.prices.splice(i, 1)
             },
-            saveProduct:function(){
+            saveProduct: function() {
                 this.$http.post(this.$api.product.saveProduct, {
-                    product:this.product
+                    product: this.product
                 }).then(res => {
-                    console.log(res)
+                    this.$notify({
+                        title: '成功',
+                        message: '保存成功',
+                        type: 'success',duration: 3000,
+                        offset:300
+                    });
                     this.$router.push({
-                    name: 'editproduct',
-                    params: {
-                        pid: res.data.pid
-                    }
-                
-                });
-            })}
+                        name: 'editproduct',
+                        params: {
+                            pid: res.data.pid
+                        }
+
+                    });
+                })
+            }
         }, computed: {
             categories: function() {
                 var category = this.$appSetting.categories;
@@ -206,20 +204,25 @@ export default {
                 this.init();
             }
         },
-        components:{draggable:draggable}
+        components: {
+            draggable: draggable
+        }
 }
 </script>
 <style>
-.el-input{
-    width: 300px
+.el-input {
+    width: 300px;
 }
-.el-input.el-input-group{
+
+.el-input.el-input-group {
     width: 100%
 }
-.el-cascader .el-input{
+
+.el-cascader .el-input {
     width: 400px
 }
-.description-item{
+
+.description-item {
     margin: 5px;
     padding: 5px 25px;
     border: 1px solid #c0ccda;
@@ -227,6 +230,7 @@ export default {
     background-color: #f6f8fa;
     position: relative;
 }
+
 .description-item:hover .el-icon-close {
     margin: 5px;
     display: inline-block;

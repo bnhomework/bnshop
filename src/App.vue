@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
         <div class="wrapper-header">
-            <topmenu :menu="menu"></topmenu>
+            <topmenu :menu="menu" @search="search"></topmenu>
         </div>
         <div class="wrapper-main">
             <div class="wrapper-container">
@@ -48,7 +48,14 @@ export default {
             menu:[]
         }
     },
-    methods: {},
+    methods: {
+        search:function(filter){
+            this.$router.push({
+                name:'searchproduct',
+                params:{filter:filter}
+            })
+        }
+    },
     computed: {
         name() {
             return this.$route.name
