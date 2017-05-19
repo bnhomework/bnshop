@@ -55,7 +55,7 @@
          }
     }
 </script>
-<style> 
+<style>
 .el-menu--horizontal .el-submenu .el-menu-item{
   min-width: 250px
 }

@@ -4,7 +4,7 @@ import Home from '@/views/home.vue'
 
 Vue.use(Router)
 
-const productList= (resolve) => { require(['@/views/product/list.vue'], resolve) }
+const productList= (resolve) => { require(['@/views/product/list2.vue'], resolve) }
 const productDetail= (resolve) => { require(['@/views/product/detail.vue'], resolve) }
 
 // admin
