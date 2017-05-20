@@ -1,9 +1,14 @@
 <template>
 	<el-row :gutter="20"  v-loading="loading">
 		<el-col :span="12">
+		<section>
+			<h3>Item # : {{product.pid}}</h3>
+			<h4>{{product.name}}</h4>
+		</section>
 			<section class="preview">
 				<product-image-viewer :imgs="productImages"></product-image-viewer>
 			</section>
+			
 			<section class="price table">
 				<h3>Prices</h3>
 				<el-table :data="product.prices" border style="width: 100%">
@@ -14,10 +19,6 @@
 			</section>
 		</el-col>
 		<el-col :span="12">
-		<section>
-			<h3>Item # : {{product.pid}}</h3>
-			<h4>{{product.name}}</h4>
-		</section>
 			<section class="description">
 				<article>
 					<h1>Product Details</h1>

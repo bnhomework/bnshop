@@ -21,25 +21,11 @@ export default {
       var category=this.$appSetting.categories
 
           var mlist=[];
-          for (var i =  0; i <category.length; i++) {
-            var c=category[i]
-            var m={};
-            m.title=c.t;
-            m.active=false;
-            m.url='/products/'+m.title;
-            if(c.st){
-              m.items=[];
-              for (var j =  0; j <c.st.length; j++) {
-                var cst=c.st[j];
-                var subm={};
-                subm.title=cst;
-                subm.active=false;
-                subm.url='/products/'+subm.title;
-                m.items.push(subm)
-              }
-            }
-            mlist.push(m)
-          }
+
+          mlist.push({title:'Home',url:'/products'})
+          mlist.push({title:'Hot Products',url:'/hot'})
+          mlist.push({title:'New Products',url:'/new'})
+          mlist.push({title:'Contact US',url:'/contact us'})
           this.menu=mlist;
     },
     data() {

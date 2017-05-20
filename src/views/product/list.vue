@@ -1,142 +1,164 @@
 <template>
-    <div class="dashboard" v-loading="loading" style="min-height: 400px">
-        <el-row :gutter="10">
-            <el-col ::xs="8" :sm="6" :md="6" :lg="4" v-for="(o, index) in dateInGrid" :key="o">
-                <el-card class="productcard">
-                    <router-link :to="{name:'viewproduct',params:{pid:o.pid}}">
-                        <div style="text-align:center">
-                            <img :src="imgUrl(o)" class="image">
-                        </div>
-                        <div class="summary">
-                            <p class="title">
-                                {{o.name}}
-                            </p>
-                            <div class="price">
-                                {{ priceToShow(o.prices) }}
-                            </div>
-                        </div>
-                    </router-link>
-                </el-card>
-            </el-col>
-        </el-row>
-        <el-pagination v-if="tableData.length>0" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[24,50, 100]" :page-size="pagesize" layout="total, ->, prev, pager, next, jumper" :total="tableData.length">
-        </el-pagination>
+    <div id="product-main">
+        <div id="products-category">
+        <sidemenu :menu="category" :defaultitem="selectedCategory"></sidemenu>
+        </div>
+        <div id="products">
+            <!-- <div class="full-tabs">
+                <ul class="shot-menu full-tabs-links">
+                    <li class="more active"><a href="/shots">Popular</a>
+                        <ul class="sub">
+                            <li><a href="/shots?sort=recent">Recent</a></li>
+                            <li><a href="/shots?sort=views">Most Viewed</a></li>
+                            <li><a href="/shots?sort=comments">Most Commented</a></li>
+                        </ul>
+                    </li>
+                    <li class="more active"><a href="/shots">Shots</a>
+                        <ul class="sub">
+                            <li><a href="/shots?list=debuts">Debuts</a></li>
+                            <li><a href="/shots?list=teams">Team Shots</a></li>
+                            <li><a href="/shots?list=playoffs">Playoffs</a></li>
+                            <li><a href="/shots?list=rebounds">Rebounds</a></li>
+                            <li><a href="/shots?list=animated">Animated GIFs</a></li>
+                            <li><a href="/shots?list=attachments">Shots with Attachments</a></li>
+                        </ul>
+                    </li>
+                    <li class="more active"><a href="/shots">Now</a>
+                        <ul class="sub">
+                            <li><a href="/shots?timeframe=week">This Past Week</a></li>
+                            <li><a href="/shots?timeframe=month">This Past Month</a></li>
+                            <li><a href="/shots?timeframe=year">This Past Year</a></li>
+                            <li><a href="/shots?timeframe=ever">All Time</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div> -->
+            <el-row :gutter="10">
+                <el-col ::xs="12" :sm="8" :md="6" :lg="4" v-for="(o, index) in tableData" :key="o">
+                    <list-item :product="o"></list-item>
+                </el-col>
+            </el-row>
+            <div class="loading-more" v-scroll-loader="getProducts" v-loading="loading" element-loading-text="Loading More ...">
+                <label v-if="isScrollNoMore">No more products</label>
+            </div>
+        </div>
     </div>
 </template>
-
 <script>
 import _ from 'underscore';
+import scrollLoader from '@/directives/scrollLoader'
+import listItem from '@/views/product/listItem.vue'
+import sidemenu from '@/components/sidemenu.vue'
 export default {
     data() {
             return {
                 loading: false,
-                pagesize: 24,
+                pagesize: 18,
                 currentPage: 1,
-                tableData: []
+                tableData: [],
+                isScrollLoading: false,
+                isScrollNoMore: false,
+                category:[],
+                selectedCategory:''
             }
         },
         created() {
-            this.getProducts();
+            this.init();
+            var category=this.$appSetting.categories
+
+          var mlist=[];
+          var length=category.length;
+          mlist.push({title:'All Products',url:'/products'})
+          for (var i =  0; i <length; i++) {
+            var c=category[i]
+            var m={};
+            m.title=c.t;
+            m.active=false;
+            m.url='/products/'+m.title;
+            if(c.st){
+              m.items=[];
+              for (var j =  0; j <c.st.length; j++) {
+                var cst=c.st[j];
+                var subm={};
+                subm.title=cst;
+                subm.active=false;
+                subm.url='/products/'+subm.title;
+                m.items.push(subm)
+              }
+            }
+            mlist.push(m)
+          }
+          this.category=mlist;
         },
         destroyed() {},
         methods: {
+            init: function() {
+
+                this.selectedCategory=this.$route.path;
+                console.log(this.selectedCategory)
+                this.isScrollLoading = false;
+                this.isScrollNoMore = false;
+                this.tableData = []
+                this.getProducts();
+            },
             getProducts: function() {
                 this.loading = true;
-                var url=this.$api.product.getProductByCategroy;
-                var data={
-                    category: this.$route.params.category
+                var url = this.$api.product.getProductByCategroy;
+                var data = {
+                    skip: this.tableData.length,
+                    limit: this.pagesize
                 };
-                if(this.$route.name=='searchproduct'){
-                    url=this.$api.product.searchProduct;
-                    data={filter:this.$route.params.filter}
+                if (this.$route.name == 'searchproduct') {
+                    url = this.$api.product.searchProduct;
+                    data.filter = this.$route.params.filter
+                } else {
+                    data.category = this.$route.params.category
                 }
 
                 this.$http.post(url, data).then(res => {
-                    this.tableData = res.data
-                    this.loading = false;
-                });
-            },
-            gotoDetail:function(pid){
-            	this.$router.push({
-                    name: 'viewproduct',
-                    params: {
-                        pid: pid
+                    var vm = this;
+                    if (res.data.length == 0) {
+                        // this.$set("isScrollNoMore",true);
+                        this.isScrollNoMore = true;
+                    } else {
+                        _.each(res.data, function(x) {
+                            vm.tableData.push(x)
+                        })
+
                     }
-                })
-            },
-            handleSizeChange(val) {
-                this.pagesize = val;
-            },
-            handleCurrentChange(val) {
-                this.currentPage = val;
-            },
-            imgUrl:function(p){
-                if(p.imgs&&p.imgs.length>0){
-                    return this.$appSetting.imgServer+p.imgs[0].path
-                }
-                return''
-            },
-            priceToShow:function(p){
-                var minPrice=_.min(p, function(x){ return x.amount; });;
-                var maxPrice=_.max(p, function(x){ return x.amount; });;
-                return "Prices from $"+minPrice.amount+" to $"+maxPrice.amount
+                    this.loading = false;
+                    this.isScrollLoading = false;
+                });
             }
         },
-        watch:{
-            $route:function(){
-                this.getProducts();
+        watch: {
+            $route: function(newValue) {
+                this.init();
+                // console.log(newValue);
             }
-        }
-        ,
-        computed: {
-            dateInGrid: function() {
-                var total = this.tableData.length;
-                var skip = this.pagesize * (this.currentPage - 1) || 0;
-                var end = skip + this.pagesize;
-                return this.tableData.slice(skip, end);
-            }
+        },
+        directives: {
+            scrollLoader: scrollLoader
+        },
+        components: {
+            listItem: listItem,
+            sidemenu:sidemenu
         }
 
 }
 </script>
 <style scoped>
-.productcard {
-    margin-bottom: 20px
+#products-category {
+    float: left;
+    width: 300px;
+
 }
 
-.productcard a {
-    text-decoration: none;
+#products {
+    margin-left: 320px
 }
-
-.productcard img {
-    height: 150px;
-    width: 150px;
-}
-
-.productcard .title {
-    color: #2c2c2c;
-    max-height: 70px;
-}
-
-.productcard .price {
-    max-height: 30px;
-    /*text-align: right;*/
-    /*font-weight: bold;*/
-    color: #333333;
-    font-size: 12px;
-    padding: 2px 2px;
-}
-
-.productcard .summary {
-    height: 100px;
-    max-height: 100px;
-}
-.productcard.el-card:hover {
-    border: 1px solid #dddddd;
-    border-radius: 4px;
-    background-color: #fff;
-    overflow: hidden;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,.42), 0 0 6px 0 rgba(0,0,0,.14);
+.loading-more{
+    text-align: center;
+    line-height: 40px;
 }
 </style>
-
