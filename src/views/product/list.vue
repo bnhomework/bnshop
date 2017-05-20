@@ -1,38 +1,9 @@
 <template>
     <div id="product-main">
         <div id="products-category">
-        <sidemenu :menu="category" :defaultitem="selectedCategory"></sidemenu>
+            <sidemenu :menu="category" :defaultitem="selectedCategory"></sidemenu>
         </div>
         <div id="products">
-            <!-- <div class="full-tabs">
-                <ul class="shot-menu full-tabs-links">
-                    <li class="more active"><a href="/shots">Popular</a>
-                        <ul class="sub">
-                            <li><a href="/shots?sort=recent">Recent</a></li>
-                            <li><a href="/shots?sort=views">Most Viewed</a></li>
-                            <li><a href="/shots?sort=comments">Most Commented</a></li>
-                        </ul>
-                    </li>
-                    <li class="more active"><a href="/shots">Shots</a>
-                        <ul class="sub">
-                            <li><a href="/shots?list=debuts">Debuts</a></li>
-                            <li><a href="/shots?list=teams">Team Shots</a></li>
-                            <li><a href="/shots?list=playoffs">Playoffs</a></li>
-                            <li><a href="/shots?list=rebounds">Rebounds</a></li>
-                            <li><a href="/shots?list=animated">Animated GIFs</a></li>
-                            <li><a href="/shots?list=attachments">Shots with Attachments</a></li>
-                        </ul>
-                    </li>
-                    <li class="more active"><a href="/shots">Now</a>
-                        <ul class="sub">
-                            <li><a href="/shots?timeframe=week">This Past Week</a></li>
-                            <li><a href="/shots?timeframe=month">This Past Month</a></li>
-                            <li><a href="/shots?timeframe=year">This Past Year</a></li>
-                            <li><a href="/shots?timeframe=ever">All Time</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div> -->
             <el-row :gutter="10">
                 <el-col ::xs="12" :sm="8" :md="6" :lg="4" v-for="(o, index) in tableData" :key="o">
                     <list-item :product="o"></list-item>
@@ -58,47 +29,22 @@ export default {
                 tableData: [],
                 isScrollLoading: false,
                 isScrollNoMore: false,
-                category:[],
-                selectedCategory:''
+                category: [],
+                selectedCategory: ''
             }
         },
         created() {
             this.init();
-            var category=this.$appSetting.categories
 
-          var mlist=[];
-          var length=category.length;
-          mlist.push({title:'All Products',url:'/products'})
-          for (var i =  0; i <length; i++) {
-            var c=category[i]
-            var m={};
-            m.title=c.t;
-            m.active=false;
-            m.url='/products/'+m.title;
-            if(c.st){
-              m.items=[];
-              for (var j =  0; j <c.st.length; j++) {
-                var cst=c.st[j];
-                var subm={};
-                subm.title=cst;
-                subm.active=false;
-                subm.url='/products/'+subm.title;
-                m.items.push(subm)
-              }
-            }
-            mlist.push(m)
-          }
-          this.category=mlist;
         },
         destroyed() {},
         methods: {
             init: function() {
-
-                this.selectedCategory=this.$route.path;
-                console.log(this.selectedCategory)
+                this.selectedCategory = this.$route.path;
                 this.isScrollLoading = false;
                 this.isScrollNoMore = false;
-                this.tableData = []
+                this.tableData = [];
+                this.loadCategories();
                 this.getProducts();
             },
             getProducts: function() {
@@ -129,6 +75,36 @@ export default {
                     this.loading = false;
                     this.isScrollLoading = false;
                 });
+            },
+            loadCategories: function() {
+                var category = this.$appSetting.categories
+
+                var mlist = [];
+                var length = category.length;
+                mlist.push({
+                    title: 'All Products',
+                    url: '/products'
+                })
+                for (var i = 0; i < length; i++) {
+                    var c = category[i]
+                    var m = {};
+                    m.title = c.t;
+                    m.active = false;
+                    m.url = '/products/' + m.title;
+                    if (c.st) {
+                        m.items = [];
+                        for (var j = 0; j < c.st.length; j++) {
+                            var cst = c.st[j];
+                            var subm = {};
+                            subm.title = cst;
+                            subm.active = false;
+                            subm.url = '/products/' + subm.title;
+                            m.items.push(subm)
+                        }
+                    }
+                    mlist.push(m)
+                }
+                this.category = mlist;
             }
         },
         watch: {
@@ -142,22 +118,25 @@ export default {
         },
         components: {
             listItem: listItem,
-            sidemenu:sidemenu
+            sidemenu: sidemenu
         }
 
 }
 </script>
 <style scoped>
 #products-category {
+    position: fixed;
+    left: 10px;
+    top:70px;
     float: left;
     width: 300px;
-
 }
 
 #products {
     margin-left: 320px
 }
-.loading-more{
+
+.loading-more {
     text-align: center;
     line-height: 40px;
 }
