@@ -13,7 +13,7 @@
             <el-collapse value="1">
                 <el-collapse-item id="colorFilter" title="Colors" name="1">
                     <el-checkbox-group v-model="filters.colors">
-                        <el-checkbox :label="item.k" v-for="item in allColors" :key="item.k">
+                        <el-checkbox :label="item.k" v-for="item in $appSetting.defaultColors" :key="item.k">
                             <!-- {{item.label}} -->
                             <div class="colors" v-bind:style="{'background-color':'#'+item.k}">
                                 <!-- <div><span>a</span></div> -->
@@ -34,6 +34,7 @@
             <div id="actionbar">
                 <el-input placeholder="filter within search results" id="filterInResult" icon="search" v-model="filterInResult">
                 </el-input>
+                <div v-if="totalProductCount>0" id="resultSummary">{{totalProductCount}} product(s)</div>
             </div>
             <el-row :gutter="10" >
                 <el-col ::xs="12" :sm="8" :md="6" :lg="4" v-for="(o, index) in tableInGrid" :key="o">
@@ -63,7 +64,7 @@ export default {
                 isScrollNoMore: false,
                 category: [],
                 filterInResult: '',
-                allColors: this.$appSetting.defaultColors,
+                totalProductCount:0,
                 filters: {
                     categories: [],
                     priceFilter: [0, 50],
@@ -112,17 +113,17 @@ export default {
                     if (res.data.length == 0) {
                         this.isScrollNoMore = true;
                     } else {
-                        //reload
-                        
                             _.each(res.data, function(x) {
                                 vm.tableData.push(x)
                             })
-                        
-
                     }
                     this.loading = false;
                     this.isScrollLoading = false;
                 });
+                this.$http.post(this.$api.product.searchProductCount, data).then(res => {
+                    this.totalProductCount=res.data
+                });
+
             },
             loadCategories: function() {
                 var category = this.$appSetting.categories
@@ -232,7 +233,10 @@ export default {
     width: 200px;
     display: inline-block;
 }
-
+#resultSummary{
+    float: right;
+    margin: 20px 20px
+}
 .loading-more {
     text-align: center;
     line-height: 40px;
