@@ -1,6 +1,6 @@
 <template>
     <div id="product-main">
-        <div id="products-category">
+        <div id="products-filters">
             <el-collapse value="1">
                 <el-collapse-item title="Price Range" name="1">
                     <div class="sortbox">
@@ -190,17 +190,17 @@ export default {
 }
 </script>
 <style scoped>
-#products-category {
+#products-filters {
     float: left;
     width: 300px;
 }
 
-#products-category .el-collapse {
+#products-filters .el-collapse {
     border: 0px;
     margin-top: 10px
 }
 
-#products-category .el-tree {
+#products-filters .el-tree {
     border: 0px;
 }
 
