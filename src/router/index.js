@@ -20,7 +20,7 @@ var routes = [{path: '/', name: 'Home', component: Home},
 
 
     {path: '/products/:category', name: 'productslist', component: productList},
-    {path: '/products', name: 'productslist', component: productList},
+    {path: '/products', name: 'products', component: productList},
     {path: '/hot', name: 'hotproducts', component: productList},
     {path: '/new', name: 'newproducts', component: productList},
     {path: '/search/:filter', name: 'searchproduct', component: productList},

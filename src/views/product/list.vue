@@ -1,16 +1,47 @@
 <template>
     <div id="product-main">
         <div id="products-category">
-            <sidemenu :menu="category" :defaultitem="selectedCategory"></sidemenu>
+            <el-collapse value="1">
+                <el-collapse-item title="Price Range" name="1">
+                    <div class="sortbox">
+                        <el-slider v-model="filters.priceFilter" :min="0" range :step="0.01" :max="50"></el-slider>
+                        <el-input-number v-model="filters.priceFilter[0]" size="small" @change=""></el-input-number>
+                        <el-input-number v-model="filters.priceFilter[1]" size="small" @change=""></el-input-number>
+                    </div>
+                </el-collapse-item>
+            </el-collapse>
+            <el-collapse value="1">
+                <el-collapse-item id="colorFilter" title="Colors" name="1">
+                    <el-checkbox-group v-model="filters.colors">
+                        <el-checkbox :label="item.k" v-for="item in allColors" :key="item.k">
+                            <!-- {{item.label}} -->
+                            <div class="colors" v-bind:style="{'background-color':'#'+item.k}">
+                                <!-- <div><span>a</span></div> -->
+                            </div>
+                        </el-checkbox>
+                    </el-checkbox-group>
+                </el-collapse-item>
+            </el-collapse>
+            <el-collapse value="1">
+                <el-collapse-item title="Category" name="1">
+                    <!-- <sidemenu :menu="category" :defaultitem="selectedCategory"></sidemenu> -->
+                    <el-tree :data="category" ref="categoryTree" show-checkbox node-key="title" :props="{children:'items',label:'title'}" @check-change="selectedCategoryChange">
+                    </el-tree>
+                </el-collapse-item>
+            </el-collapse>
         </div>
         <div id="products">
-            <el-row :gutter="10">
-                <el-col ::xs="12" :sm="8" :md="6" :lg="4" v-for="(o, index) in tableData" :key="o">
+            <div id="actionbar">
+                <el-input placeholder="filter within search results" id="filterInResult" icon="search" v-model="filterInResult">
+                </el-input>
+            </div>
+            <el-row :gutter="10" >
+                <el-col ::xs="12" :sm="8" :md="6" :lg="4" v-for="(o, index) in tableInGrid" :key="o">
                     <list-item :product="o"></list-item>
                 </el-col>
             </el-row>
             <div class="loading-more" v-scroll-loader="getProducts" v-loading="loading" element-loading-text="Loading More ...">
-                <label v-if="isScrollNoMore">No more products</label>
+                <!-- <label v-if="isScrollNoMore">No more products</label> -->
             </div>
         </div>
     </div>
@@ -20,6 +51,7 @@ import _ from 'underscore';
 import scrollLoader from '@/directives/scrollLoader'
 import listItem from '@/views/product/listItem.vue'
 import sidemenu from '@/components/sidemenu.vue'
+import utils from '@/utils'
 export default {
     data() {
             return {
@@ -30,7 +62,14 @@ export default {
                 isScrollLoading: false,
                 isScrollNoMore: false,
                 category: [],
-                selectedCategory: ''
+                filterInResult: '',
+                allColors: this.$appSetting.defaultColors,
+                filters: {
+                    categories: [],
+                    priceFilter: [0, 50],
+                    colors: [],
+                    filter: ''
+                }
             }
         },
         created() {
@@ -40,36 +79,45 @@ export default {
         destroyed() {},
         methods: {
             init: function() {
-                this.selectedCategory = this.$route.path;
                 this.isScrollLoading = false;
                 this.isScrollNoMore = false;
                 this.tableData = [];
                 this.loadCategories();
-                this.getProducts();
+
+                this.filters = {
+                        categories: [],
+                        priceFilter: [0, 50],
+                        colors: [],
+                        filter: ''
+                    }
+                    // this.getProducts();
             },
             getProducts: function() {
                 this.loading = true;
                 var url = this.$api.product.getProductByCategroy;
-                var data = {
+
+                    if (arguments && arguments[0] == true) {
+                            this.tableData = [];
+                            this.isScrollNoMore = false;
+                        }
+                var data = _.extend({}, this.filters, {
                     skip: this.tableData.length,
                     limit: this.pagesize
-                };
-                if (this.$route.name == 'searchproduct') {
-                    url = this.$api.product.searchProduct;
-                    data.filter = this.$route.params.filter
-                } else {
-                    data.category = this.$route.params.category
-                }
-
+                });
+                url = this.$api.product.searchProduct;
+                data.filter = this.$route.params.filter
+                // console.log(data)
                 this.$http.post(url, data).then(res => {
                     var vm = this;
                     if (res.data.length == 0) {
-                        // this.$set("isScrollNoMore",true);
                         this.isScrollNoMore = true;
                     } else {
-                        _.each(res.data, function(x) {
-                            vm.tableData.push(x)
-                        })
+                        //reload
+                        
+                            _.each(res.data, function(x) {
+                                vm.tableData.push(x)
+                            })
+                        
 
                     }
                     this.loading = false;
@@ -81,10 +129,6 @@ export default {
 
                 var mlist = [];
                 var length = category.length;
-                mlist.push({
-                    title: 'All Products',
-                    url: '/products'
-                })
                 for (var i = 0; i < length; i++) {
                     var c = category[i]
                     var m = {};
@@ -105,16 +149,38 @@ export default {
                     mlist.push(m)
                 }
                 this.category = mlist;
+            },
+            selectedCategoryChange: function() {
+                this.filters.categories = this.$refs.categoryTree.getCheckedKeys();
             }
         },
         watch: {
             $route: function(newValue) {
                 this.init();
-                // console.log(newValue);
+            },
+            filters: {
+                handler: function(v) {
+                    if (this.throttle == undefined)
+                        this.throttle = utils.throttle(this.getProducts, 500);
+                    this.throttle(true);
+                },
+                deep: true
             }
         },
         directives: {
             scrollLoader: scrollLoader
+        },
+        computed: {
+            tableInGrid: function() {
+                return this.tableData.filter((x) => {
+                    if (this.filterInResult == undefined || this.filterInResult.trim() == '') {
+                        return true;
+                    } else {
+                        var f = this.filterInResult.trim().toLocaleLowerCase();
+                        return (x.name && x.name.toLocaleLowerCase().indexOf(f) > -1) || (x.pid && x.pid.toLocaleLowerCase().indexOf(f) > -1)
+                    }
+                })
+            }
         },
         components: {
             listItem: listItem,
@@ -125,19 +191,64 @@ export default {
 </script>
 <style scoped>
 #products-category {
-    position: fixed;
-    left: 10px;
-    top:70px;
     float: left;
     width: 300px;
+}
+
+#products-category .el-collapse {
+    border: 0px;
+    margin-top: 10px
+}
+
+#products-category .el-tree {
+    border: 0px;
 }
 
 #products {
     margin-left: 320px
 }
 
+#actionbar {
+    width: 100%;
+    min-height: 60px;
+    border-bottom: 1px solid #e5e5e5;
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+#filterInResult {
+    position: absolute;
+    top: 10px;
+    left: 360px;
+    width: 300px;
+}
+
+#actionbar .sortbox {
+    position: absolute;
+    top: 10px;
+    right: 60px;
+}
+
+#actionbar .el-slider {
+    width: 200px;
+    display: inline-block;
+}
+
 .loading-more {
     text-align: center;
     line-height: 40px;
+}
+
+#colorFilter .el-checkbox {
+    margin-left: 0px;
+    margin-right: 15px;
+}
+
+div.colors {
+    width: 45px;
+    height: 25px;
+    border: 1px solid #1f1f1f;
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 5px;
 }
 </style>
