@@ -1,6 +1,7 @@
 <template>
     <div>
-        <el-button @click="saveProduct">save</el-button>
+    <el-row>
+        <el-button @click="saveProduct" id="btnSave" type="primary">save</el-button></el-row>
         <el-row :gutter="20">
             <el-col :span="12">
                 <section>
@@ -11,6 +12,19 @@
                 <section>
                     <h3 class="demonstration">Categoary</h3>
                     <el-cascader expand-trigger="hover" :options="categories" v-model="product.category" clearable size="large"></el-cascader>
+                </section>
+
+                <section id="colorFilter" >
+                    <h3 class="demonstration">Colors</h3>
+                    
+                    <el-checkbox-group v-model="product.colors">
+                        <el-checkbox :label="item.k" v-for="item in $appSetting.defaultColors" :key="item.k">
+                            <!-- {{item.label}} -->
+                            <div class="colors" v-bind:style="{'background-color':'#'+item.k}">
+                                <!-- <div><span>a</span></div> -->
+                            </div>
+                        </el-checkbox>
+                    </el-checkbox-group>
                 </section>
                 <section>
                     <h3>Upload Images</h3>
@@ -35,7 +49,7 @@
                 </section>
                 <section>
                     <h3>Prices</h3>
-                    <el-button @click="openEditPriceDialog()">Add</el-button>
+                    <el-button @click="openEditPriceDialog()" id="btnAdd">Add</el-button>
                     <el-table :data="product.prices" border style="width: 100%">
                         <el-table-column type="index"></el-table-column>
                         <el-table-column prop="moq" label="MOQ" width="180" align="right"></el-table-column>
@@ -210,6 +224,10 @@ export default {
 }
 </script>
 <style>
+#btnSave,#btnAdd{
+    float: right;
+    margin: 10px 20px;
+}
 .el-input {
     width: 300px;
 }
@@ -243,5 +261,18 @@ export default {
 
 .description-item .el-icon-close {
     display: none;
+}
+#colorFilter .el-checkbox {
+    margin-left: 0px;
+    margin-right: 15px;
+}
+
+div.colors {
+    width: 45px;
+    height: 25px;
+    border: 1px solid #1f1f1f;
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 5px;
 }
 </style>
