@@ -243,7 +243,7 @@ export default {
     margin-right: 15px;
 }
 
-div.colors {
+#colorFilter div.colors {
     width: 45px;
     height: 25px;
     border: 1px solid #1f1f1f;
